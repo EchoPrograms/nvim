@@ -1,3 +1,5 @@
+LIVESHARE_USERNAME = "EchoPrograms"
+
 require("config.lazy")
 require("config.remap")
 require("config.treesitter")
@@ -58,6 +60,8 @@ vim.opt.incsearch = true;
 vim.opt.updatetime = 50
 
 vim.opt.isfname:append("@-@")
+
+vim.opt.splitright = true
 
 -- Marks
 require('marks').setup({

@@ -1,7 +1,11 @@
 vim.g.mapleader = " "
 
--- Built in
+-- QoL 
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>y", "\"+y")
+vim.keymap.set("v", "<leader>y", "\"+y")
+vim.keymap.set("n", "<leader>p", "\"+p")
+vim.keymap.set("v", "<leader>p", "\"+p")
 
 -- Telescope
 local builtin = require('telescope.builtin')
@@ -62,3 +66,66 @@ vim.api.nvim_create_autocmd("LspAttach", {
   end,
 })
 
+
+-- CodeCompanion keymaps (all begin with <leader>c)
+
+-- Model selection menu for CodeCompanion
+vim.keymap.set("n", "<leader>cm", function()
+  -- Query Ollama models from local API
+  local function get_ollama_models()
+    local handle = io.popen("curl -s http://localhost:11434/api/tags")
+    if not handle then return {} end
+    local result = handle:read("*a")
+    handle:close()
+    local models = {}
+    if result and result ~= "" then
+      local ok, json = pcall(vim.fn.json_decode, result)
+      if ok and type(json) == "table" then
+        for _, m in ipairs(json.models or {}) do
+          table.insert(models, { name = "Ollama (" .. m.name .. ")", model = "ollama-" .. m.name })
+        end
+      end
+    end
+    return models
+  end
+
+  local models = {
+    { name = "Copilot (gpt-3.5-turbo)", model = "copilot-gpt-3.5-turbo" },
+    { name = "Copilot (gpt-4)", model = "copilot-gpt-4" },
+  }
+  -- Add Ollama models from Docker
+  for _, m in ipairs(get_ollama_models()) do
+    table.insert(models, m)
+  end
+
+  local choices = {}
+  for i, m in ipairs(models) do
+    table.insert(choices, string.format("%d. %s", i, m.name))
+  end
+
+  vim.ui.select(choices, { prompt = "Select CodeCompanion Model:" }, function(choice, idx)
+    if choice and idx then
+      vim.g.codecompanion_model = models[idx].model
+      vim.notify("CodeCompanion model set to " .. models[idx].name, vim.log.levels.INFO)
+    end
+  end)
+end, { noremap = true, silent = true })
+
+-- Inline assistant
+vim.keymap.set("n", "<leader>ci", "<cmd>CodeCompanion<cr>", { noremap = true, silent = true })
+vim.keymap.set("v", "<leader>ci", "<cmd>CodeCompanion<cr>", { noremap = true, silent = true })
+
+-- Chat
+vim.keymap.set("n", "<leader>cn", "<cmd>CodeCompanionChat<cr>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>cc", "<cmd>CodeCompanionChat Toggle<cr>", { noremap = true, silent = true })
+vim.keymap.set("v", "<leader>ca", "<cmd>CodeCompanionChat Add<cr>", { noremap = true, silent = true })
+
+-- Refresh chat cache
+vim.keymap.set("n", "<leader>cr", "<cmd>CodeCompanionChat RefreshCache<cr>", { noremap = true, silent = true })
+
+-- Actions palette
+vim.keymap.set("n", "<leader>ca", "<cmd>CodeCompanionActions<cr>", { noremap = true, silent = true })
+
+-- Prompt library examples
+vim.keymap.set("n", "<leader>ce", "<cmd>CodeCompanion /explain<cr>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>cf", "<cmd>CodeCompanion /fix<cr>", { noremap = true, silent = true })
