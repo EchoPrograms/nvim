@@ -28,6 +28,14 @@ vim.opt.termguicolors = true
 vim.opt.scrolloff = 8;
 
 vim.cmd("colorscheme habamax")
+vim.api.nvim_set_hl(0, "Normal", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "NormalNC", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "SignColumn", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "LineNr", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "FoldColumn", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "FloatBorder", { bg = "#000000" })
+vim.api.nvim_set_hl(0, "EndOfBuffer", { bg = "#000000" })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight text on yank",
