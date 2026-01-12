@@ -5,10 +5,6 @@ require("config.remap")
 require("config.treesitter")
 
 
--- LSP
-vim.lsp.enable({'clangd', 'lua_ls'})
-
-
 -- Appearance
 vim.diagnostic.config({
   -- Use the default configuration
