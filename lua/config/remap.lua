@@ -18,6 +18,10 @@ vim.keymap.set('n', '<leader>G', builtin.live_grep, {})
 -- Nav
 vim.keymap.set("i", "jk", "<Esc>", {})
 
+-- Overseer
+vim.keymap.set("n", "<leader>ot", "<cmd>OverseerToggle<cr>")
+vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<cr>")
+vim.keymap.set("n", "<leader>ob", "<cmd>OverseerBuild<cr>")
 
 -- Harpoon
 local mark = require("harpoon.mark")
