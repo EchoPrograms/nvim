@@ -21,7 +21,6 @@ vim.keymap.set("i", "jk", "<Esc>", {})
 -- Overseer
 vim.keymap.set("n", "<leader>ot", "<cmd>OverseerToggle<cr>")
 vim.keymap.set("n", "<leader>or", "<cmd>OverseerRun<cr>")
-vim.keymap.set("n", "<leader>ob", "<cmd>OverseerBuild<cr>")
 
 -- Harpoon
 local mark = require("harpoon.mark")
@@ -47,6 +46,8 @@ vim.keymap.set('n', '<leader>u', vim.cmd.UndotreeToggle)
 
 -- Vim Fugitive
 vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
+vim.keymap.set('n', '<leader>gb', function () vim.cmd.Git('blame') end)
+vim.keymap.set('n', '<leader>gd', function () vim.cmd('Gvdiffsplit') end)
 
 -- lsp
 vim.api.nvim_create_autocmd("LspAttach", {
