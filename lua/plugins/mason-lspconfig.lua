@@ -19,7 +19,17 @@ return {
           },
         },
       },
-      jdtls = {},
+      jdtls = {
+        settings = {
+          java = {
+            inlayHints = {
+              parameterNames = {
+                enabled = "all"
+              }
+            }
+          }
+        }
+      },
     }
 
     local ensure = {}
