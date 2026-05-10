@@ -2,6 +2,7 @@ vim.g.mapleader = " "
 
 -- QoL 
 vim.keymap.set("n", "<leader>e", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>t", ":NvimTreeToggle<cr>")
 vim.keymap.set("n", "<leader>y", "\"+y")
 vim.keymap.set("v", "<leader>y", "\"+y")
 vim.keymap.set("n", "<leader>p", "\"+p")
@@ -141,24 +142,46 @@ function nnoremap(rhs, lhs, desc)
   vim.keymap.set("n", rhs, lhs, { desc  = desc })
 end
 
-nnoremap("<leader>bb", "<cmd>lua require'dap'.toggle_breakpoint()<cr>", "Set breakpoint")
-nnoremap("<leader>bc", "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<cr>", "Set conditional breakpoint")
-nnoremap("<leader>bl", "<cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<cr>", "Set log point")
-nnoremap('<leader>br', "<cmd>lua require'dap'.clear_breakpoints()<cr>", "Clear breakpoints")
-nnoremap('<leader>ba', '<cmd>Telescope dap list_breakpoints<cr>', "List breakpoints")
+local dap_ok, dap = pcall(require, "dap")
+if dap_ok then
+  local dapui_ok, dapui = pcall(require, "dapui")
+  local widgets_ok, widgets = pcall(require, "dap.ui.widgets")
+  local map_opts = { silent = true }
 
-nnoremap("<leader>rc", "<cmd>lua require'dap'.continue()<cr>", "Continue")
-nnoremap("<leader>rj", "<cmd>lua require'dap'.step_over()<cr>", "Step over")
-nnoremap("<leader>rk", "<cmd>lua require'dap'.step_into()<cr>", "Step into")
-nnoremap("<leader>ro", "<cmd>lua require'dap'.step_out()<cr>", "Step out")
-nnoremap('<leader>rd', "<cmd>lua require'dap'.disconnect()<cr>", "Disconnect")
-nnoremap('<leader>rt', "<cmd>lua require'dap'.terminate()<cr>", "Terminate")
-nnoremap("<leader>rr", "<cmd>lua require'dap'.repl.toggle()<cr>", "Open REPL")
-nnoremap("<leader>rl", "<cmd>lua require'dap'.run_last()<cr>", "Run last")
-nnoremap('<leader>ri', function() require"dap.ui.widgets".hover() end, "Variables")
-nnoremap('<leader>r?', function() local widgets=require"dap.ui.widgets";widgets.centered_float(widgets.scopes) end, "Scopes")
-nnoremap('<leader>rf', '<cmd>Telescope dap frames<cr>', "List frames")
-nnoremap('<leader>rh', '<cmd>Telescope dap commands<cr>', "List commands")
+  nnoremap("<leader>bb", function() dap.toggle_breakpoint() end, "Set breakpoint")
+  nnoremap("<leader>bc", function() dap.set_breakpoint(vim.fn.input("Breakpoint condition: ")) end, "Set conditional breakpoint")
+  nnoremap("<leader>bl", function() dap.set_breakpoint(nil, nil, vim.fn.input("Log point message: ")) end, "Set log point")
+  nnoremap("<leader>br", function() dap.clear_breakpoints() end, "Clear breakpoints")
+  nnoremap("<leader>ba", '<cmd>Telescope dap list_breakpoints<cr>', "List breakpoints")
 
+  nnoremap("<leader>rc", function()
+    dap.continue()
+    if dapui_ok then dapui.open({}) end
+  end, "Continue")
+  nnoremap("<leader>ru", function()
+    dap.close()
+    if dapui_ok then dapui.close({}) end
+  end, "Close session")
+  nnoremap("<leader>rj", function() dap.step_over() end, "Step over")
+  nnoremap("<leader>rk", function() dap.step_into() end, "Step into")
+  nnoremap("<leader>ro", function() dap.step_out() end, "Step out")
+  nnoremap("<leader>rd", function() dap.disconnect() end, "Disconnect")
+  nnoremap("<leader>rt", function()
+    dap.terminate()
+    if dapui_ok then dapui.close({}) end
+  end, "Terminate session")
+  nnoremap("<leader>rr", function() dap.repl.toggle() end, "Open REPL")
+  nnoremap("<leader>rl", function() dap.run_last() end, "Run last")
+  if widgets_ok then
+    nnoremap("<leader>ri", function() widgets.hover() end, "Variables")
+    nnoremap("<leader>r?", function() widgets.centered_float(widgets.scopes) end, "Scopes")
+  end
+  nnoremap("<leader>rf", '<cmd>Telescope dap frames<cr>', "List frames")
+  nnoremap("<leader>rh", '<cmd>Telescope dap commands<cr>', "List commands")
 
-
+  if dapui_ok then
+    nnoremap("<leader>rU", function()
+      dapui.toggle({})
+    end, "Toggle DAP UI panes")
+  end
+end

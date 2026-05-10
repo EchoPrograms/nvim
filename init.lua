@@ -3,8 +3,9 @@ LIVESHARE_USERNAME = "EchoPrograms"
 require("config.lazy")
 require("config.remap")
 require("config.treesitter")
+require("autoclose").setup()
 
- vim.lsp.inlay_hint.enable(true)
+vim.lsp.inlay_hint.enable(true)
 
 -- Appearance
 vim.diagnostic.config({
